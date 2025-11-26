@@ -1,0 +1,189 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    cpus: 1
+    mem_limit: 2g
+    environment:
+      POSTGRES_USER: pharma
+      POSTGRES_PASSWORD: pharma
+      POSTGRES_DB: smartpharma
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - spc-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_server
+    restart: always
+    cpus: 1
+    mem_limit: 1g
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - spc-net
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin_server
+    restart: always
+    cpus: 1
+    mem_limit: 512m
+    ports:
+      - "9411:9411"
+    networks:
+      - spc-net
+
+  registry:
+    build: ./registry
+    container_name: registry
+    restart: always
+    cpus: 2
+    mem_limit: 1g
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_ZIPKIN_BASE_URL: http://zipkin:9411/
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+    networks:
+      - spc-net
+
+  gateway:
+    build: ./gateway
+    container_name: gateway
+    restart: always
+    depends_on:
+      - registry
+    cpus: 2
+    mem_limit: 1g
+    ports:
+      - "9000:9000"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka
+      SPRING_ZIPKIN_BASE_URL: http://zipkin:9411/
+    networks:
+      - spc-net
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth_service
+    restart: always
+    depends_on:
+      - postgres
+      - registry
+      - rabbitmq
+    cpus: 2
+    mem_limit: 1g
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/smartpharma
+      SPRING_DATASOURCE_USERNAME: pharma
+      SPRING_DATASOURCE_PASSWORD: pharma
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka
+      SPRING_ZIPKIN_BASE_URL: http://zipkin:9411/
+      RABBITMQ_HOST: rabbitmq
+    networks:
+      - spc-net
+
+  order-service:
+    build: ./order-service
+    container_name: order_service
+    restart: always
+    depends_on:
+      - postgres
+      - rabbitmq
+      - registry
+    cpus: 2
+    mem_limit: 1g
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/smartpharma
+      SPRING_DATASOURCE_USERNAME: pharma
+      SPRING_DATASOURCE_PASSWORD: pharma
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka
+      SPRING_ZIPKIN_BASE_URL: http://zipkin:9411/
+      RABBITMQ_HOST: rabbitmq
+    networks:
+      - spc-net
+
+  inventory-service:
+    build: ./inventory-service
+    container_name: inventory_service
+    restart: always
+    depends_on:
+      - postgres
+      - registry
+      - rabbitmq
+    cpus: 2
+    mem_limit: 1g
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/smartpharma
+      SPRING_DATASOURCE_USERNAME: pharma
+      SPRING_DATASOURCE_PASSWORD: pharma
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka
+      SPRING_ZIPKIN_BASE_URL: http://zipkin:9411/
+      RABBITMQ_HOST: rabbitmq
+    networks:
+      - spc-net
+
+  pricing-service:
+    build: ./pricing-service
+    container_name: pricing_service
+    restart: always
+    depends_on:
+      - registry
+      - postgres
+      - rabbitmq
+    cpus: 2
+    mem_limit: 1g
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/smartpharma
+      SPRING_DATASOURCE_USERNAME: pharma
+      SPRING_DATASOURCE_PASSWORD: pharma
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka
+      SPRING_ZIPKIN_BASE_URL: http://zipkin:9411/
+      RABBITMQ_HOST: rabbitmq
+    networks:
+      - spc-net
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification_service
+    restart: always
+    depends_on:
+      - rabbitmq
+      - registry
+      - postgres
+    cpus: 2
+    mem_limit: 1g
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/smartpharma
+      SPRING_DATASOURCE_USERNAME: pharma
+      SPRING_DATASOURCE_PASSWORD: pharma
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka
+      SPRING_ZIPKIN_BASE_URL: http://zipkin:9411/
+      RABBITMQ_HOST: rabbitmq
+    networks:
+      - spc-net
+
+networks:
+  spc-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
