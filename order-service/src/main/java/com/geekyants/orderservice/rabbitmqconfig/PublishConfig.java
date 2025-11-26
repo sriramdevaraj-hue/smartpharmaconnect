@@ -43,8 +43,8 @@ public class PublishConfig {
 	    }
 
 	    @Bean
-	    public DirectExchange orderEventsExchange() {
-	        return new DirectExchange(EXCHANGE);
+	    public TopicExchange orderEventsExchange() {
+	        return new TopicExchange(EXCHANGE);
 	    }
 
 
