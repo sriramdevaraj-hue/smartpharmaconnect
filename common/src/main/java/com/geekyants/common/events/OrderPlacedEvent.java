@@ -11,7 +11,6 @@ public class OrderPlacedEvent {
 	private UUID orderId;
     private UUID customerId;
     private BigDecimal totalAmount;
-    private String currency;
     
     
 	public UUID getOrderId() {
@@ -32,14 +31,6 @@ public class OrderPlacedEvent {
 	public void setTotalAmount(BigDecimal totalAmount) {
 		this.totalAmount = totalAmount;
 	}
-	public String getCurrency() {
-		return currency;
-	}
-	public void setCurrency(String currency) {
-		this.currency = currency;
-	}
-    
-    
-
+	
 
 }

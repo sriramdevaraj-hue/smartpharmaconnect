@@ -1,12 +1,15 @@
 package com.geekyants.orderservice.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.geekyants.common.events.OrderPlacedEvent;
 import com.geekyants.orderservice.dto.OrdersDTO;
 import com.geekyants.orderservice.entity.Orders;
 import com.geekyants.orderservice.entity.Status;
@@ -19,6 +22,9 @@ public class OrderServiceImpl implements OrderService {
 
 	@Autowired
 	private OrdersRepository ordersRepo;
+	
+	@Autowired
+	private RabbitTemplate template;
 
 	public Orders addOrders(OrdersDTO dto) {
 		Orders ord = new Orders();
@@ -28,7 +34,16 @@ public class OrderServiceImpl implements OrderService {
 		ord.setTotalPrice(dto.getTotalPrice());
 		ord.setStatus(dto.getStatus());
 		ord.setCreatedAt(LocalDateTime.now());
-		return ordersRepo.save(ord);
+		Orders newOrders =  ordersRepo.save(ord);
+		
+		OrderPlacedEvent event = new OrderPlacedEvent();
+        event.setOrderId(newOrders.getId());
+        event.setCustomerId(newOrders.getCustomerId());
+        event.setTotalAmount(new BigDecimal(newOrders.getTotalPrice()));
+        template.convertAndSend("order.events", "order.placed", event);
+
+        return newOrders;
+
 	}
 
 	public Orders getOrdersById(UUID id) {
