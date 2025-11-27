@@ -2,8 +2,8 @@ package com.geekyants.authservice.rabbitmqconfig;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -33,8 +33,8 @@ public class PublishConfig {
     }
 
     @Bean
-    public TopicExchange userEventsExchange() {
-        return new TopicExchange(EXCHANGE);
+    public FanoutExchange userEventsExchange() {
+        return new FanoutExchange(EXCHANGE);
     }
     
     @Bean
@@ -44,8 +44,9 @@ public class PublishConfig {
 
     
     @Bean
-    public Binding binding(Queue queue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(queue).to(topicExchange).with(ROUTING_KEY);
+    public Binding binding(Queue queue, FanoutExchange fanoutExchange) {
+        return BindingBuilder.bind(queue).to(fanoutExchange);
+        
     }
 
 
