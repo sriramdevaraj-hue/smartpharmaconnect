@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.geekyants.common.events.MedicineUpdatedEvent;
+import com.geekyants.common.events.OrderPlacedEvent;
 import com.geekyants.inventoryservice.dto.MedicinesDTO;
 import com.geekyants.inventoryservice.entity.Medicines;
 import com.geekyants.inventoryservice.rabbitmqconfig.PublishConfig;
@@ -53,6 +54,20 @@ public class InventoryServiceImpl implements InventoryService {
         } else {
             throw new EntityNotFoundException();
         }
+    }
+    
+    public void updateStock(OrderPlacedEvent event) {
+    	
+    	UUID medId = event.getMedicineId();
+    	Optional<Medicines> med = invRepo.findById(medId);
+    	if(med.isPresent()) {
+    		int orderedStock =event.getOrderedStock();
+    		 Medicines newMed = med.get();
+    		 int updatedStock = newMed.getStock() - orderedStock;
+    		 newMed.setStock(updatedStock);
+    		 invRepo.save(newMed);
+    	}
+    	
     }
     
 }

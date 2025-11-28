@@ -50,7 +50,8 @@ public class InventoryController {
     public ResponseEntity<?> getMedicinesDetails(@PathVariable("id") UUID id) {
         try {
             Medicines m = invServ.getMedicinesById(id);
-            return ResponseEntity.status(HttpStatus.FOUND).body(m);
+            //return ResponseEntity.status(HttpStatus.FOUND).body(m);
+            return ResponseEntity.ok(m);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Medicines Found");
 

@@ -17,7 +17,6 @@ public class NotificationListener {
 
     @RabbitListener(queues = "user.registered.notifications")
     public void handleUserRegistered(UserRegisteredEvent event) {
-        //log.info("Notification: user.registered {}", event);
         notificationsService.createNotificationForUser(
                 event.getUserId(),
                 "Welcome to SmartPharma",
@@ -27,7 +26,6 @@ public class NotificationListener {
 
     @RabbitListener(queues = "medicine.updated.notifications")
     public void handleMedicineUpdated(MedicineUpdatedEvent event) {
-        //log.info("Notification: medicine.updated {}", event);
         notificationsService.createBroadcastNotification(
                 event.getMedicineID(),
                 "Medicine " + event.getName() + " has been updated in inventory."
@@ -36,7 +34,6 @@ public class NotificationListener {
 
     @RabbitListener(queues = "pricing.updated.notifications")
     public void handlePricingUpdated(PricingUpdatedEvent event) {
-        //log.info("Notification: pricing.updated {}", event);
         notificationsService.createBroadcastNotification(
                 event.getMedicineId(),
                 "New price for medicine " + event.getMedicineId() + " is " +
@@ -46,7 +43,6 @@ public class NotificationListener {
 
     @RabbitListener(queues = "order.placed.notifications")
     public void handleOrderPlaced(OrderPlacedEvent event) {
-       // log.info("Notification: order.placed {}", event);
         notificationsService.createNotificationForUser(
                 event.getCustomerId(),
                 "Order placed",
