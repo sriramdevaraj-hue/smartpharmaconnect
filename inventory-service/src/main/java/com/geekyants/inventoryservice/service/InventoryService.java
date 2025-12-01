@@ -8,7 +8,7 @@ import com.geekyants.inventoryservice.entity.Medicines;
 
 public interface InventoryService {
 
-    Medicines insertMedicines(MedicinesDTO dto);
+    Medicines insertOrUpdateMedicines(MedicinesDTO dto);
 
     List<Medicines> listMedicines();
 

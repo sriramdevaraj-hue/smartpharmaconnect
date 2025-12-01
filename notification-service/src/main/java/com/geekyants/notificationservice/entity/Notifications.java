@@ -1,6 +1,6 @@
 package com.geekyants.notificationservice.entity;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ public class Notifications {
 	private UUID id;
 	private UUID refId;
 	private String message;
-	private LocalDateTime createdAt;
+	private Date createdAt;
 	
 	public UUID getId() {
 		return id;
@@ -44,11 +44,11 @@ public class Notifications {
 		this.message = message;
 	}
 
-	public LocalDateTime getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(LocalDateTime createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 

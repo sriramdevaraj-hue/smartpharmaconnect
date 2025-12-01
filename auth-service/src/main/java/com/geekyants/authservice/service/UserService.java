@@ -12,6 +12,5 @@ public interface UserService {
 	String loginUser(LoginDTO loginDTO);
 
 	String tokensRefresh(RefreshTokensDTO dto);
-	//String tokensRefresh(String authorizationHeader,String email);
 
 }

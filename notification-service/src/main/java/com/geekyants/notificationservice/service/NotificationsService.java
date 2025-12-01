@@ -11,7 +11,7 @@ public interface NotificationsService {
 
 	List<Notifications> listAllNotifications();
 
-	void createNotificationForUser(UUID userId, String string, String string2);
+	void createNotificationForUser(UUID userId, String string);
 
 	void createBroadcastNotification(UUID id, String string2);
 

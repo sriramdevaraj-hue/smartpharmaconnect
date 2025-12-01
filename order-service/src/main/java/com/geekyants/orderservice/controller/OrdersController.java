@@ -30,7 +30,7 @@ public class OrdersController {
 			orderServ.addOrders(dto);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Order Placed Successfully");
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order Not Placed..!");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
 
@@ -45,7 +45,6 @@ public class OrdersController {
 	}
 	
 	@PatchMapping("/orders/{id}/status")
-	// @PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> updateStatus(@PathVariable("id") UUID id, @RequestBody OrdersDTO dto) {
 		try {
 			orderServ.updateOrderStatus(id, dto.getStatus());

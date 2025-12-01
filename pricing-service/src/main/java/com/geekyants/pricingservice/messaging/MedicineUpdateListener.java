@@ -16,7 +16,6 @@ public class MedicineUpdateListener {
 
     @RabbitListener(queues = "inventory.medicine.updated")
     public void handleMedicineUpdated(MedicineUpdatedEvent event) {
-        //log.info("Pricing received medicine.updated: {}", event);
         pricingService.calculatePrice(event);
     }
 }

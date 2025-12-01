@@ -39,30 +39,25 @@ public class OrderServiceImpl implements OrderService {
 		 if (dto.getMedicineId() == null) {
 		        throw new IllegalArgumentException("Medicine-ID cannot be Empty");
 		    }
+		 
 		Orders ord = new Orders();
 		ord.setCustomerId(dto.getCustomerId());
 		ord.setMedicineId(dto.getMedicineId());
-		
-		//Medicines med = invRepo.getById(dto.getMedicineId());
-        //InventoryResponse inventory = invClient.getMedicineById(medicineId.toString());
 
         InventoryResponseDTO invRespDTO = invClient.getMedicinesDetails(dto.getMedicineId());
-
-		if (null == invRespDTO) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Medicine not found");
-		} else {
 			if (dto.getQuantity() >= invRespDTO.getStock()) {
-				throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Insufficient Stock");
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Insufficient Stock");
 				}
-		}
 		ord.setQuantity(dto.getQuantity());
-		
-		
 		
 		ord.setTotalPrice(dto.getTotalPrice());
 		ord.setStatus(dto.getStatus());
 		ord.setCreatedAt(LocalDateTime.now());
 		Orders newOrders =  ordersRepo.save(ord);
+		
+		invRespDTO.setStock(invRespDTO.getStock()-dto.getQuantity());
+		
+		InventoryResponseDTO newDto = invClient.addOrUpdateMedicines(invRespDTO);
 		
 		OrderPlacedEvent event = new OrderPlacedEvent();
         event.setOrderId(newOrders.getId());
@@ -70,9 +65,7 @@ public class OrderServiceImpl implements OrderService {
         event.setTotalAmount(new BigDecimal(newOrders.getTotalPrice()));
         event.setOrderedStock(newOrders.getQuantity());
         event.setMedicineId(newOrders.getMedicineId());
-        
         template.convertAndSend("order.events", "order.placed", event);
-
         return newOrders;
 
 	}

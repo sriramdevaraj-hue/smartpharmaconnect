@@ -66,20 +66,17 @@ public class PriceServiceImpl implements PriceService {
 	    double basePrice = rule.getBasePrice();
 	    double discount = rule.getDiscountPercent();
 	    double finalPrice = basePrice * (1 - (discount / 100.0));
-		//int final_price = base_price * (1 - discount_percent / 100);
-		
 		
 		PriceRules pr = new PriceRules();
 		pr.setFinalPrice(finalPrice);
 		pr.setMedicineId((UUID) events.getMedicineID());
 		pr.setCalculatedAt(Instant.now());
-		priceRulesRepo.save(pr);
+		PriceRules newPR = priceRulesRepo.save(pr);
 		
 		PricingUpdatedEvent pev = new PricingUpdatedEvent();
-		pev.setMedicineId(pr.getMedicineId());
-		pev.setNewPrice(pr.getFinalPrice());
-        template.convertAndSend(PublishConfig.EXCHANGE,PublishConfig.ROUTING_KEY,events);
-
+		pev.setMedicineId(newPR.getMedicineId());
+		pev.setNewPrice(newPR.getFinalPrice());
+        template.convertAndSend(PublishConfig.EXCHANGE,PublishConfig.ROUTING_KEY,pev);
 
 	}
 
@@ -88,10 +85,5 @@ public class PriceServiceImpl implements PriceService {
         return price;
 	}
 	
-
-
-
-	
-
 
 }

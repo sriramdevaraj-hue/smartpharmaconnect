@@ -72,26 +72,6 @@ public class UserServiceImpl implements UserService {
 		return jwtToken;
 	}
 
-//	public String tokensRefresh(RefeshTokensDTO dto) {
-//		
-//		//public String tokensRefresh(String authorizationHeader, String email)
-//		String jwtToken = "";
-//		if (JWTService.isTokenExpired(authorizationHeader)) {
-//			//String username = JWTService.extractUsername(authorizationHeader);
-//			User u = userRepo.findById(id).orElseThrow();
-//			//User u = userRepo.findByEmail(email).orElseThrow();
-//			jwtToken = JWTService.generateToken(u);
-//			RefreshTokens tok = new RefreshTokens();
-//			tok.setToken(jwtToken);
-//			tok.setUserId(u.getId());
-//			tok.setExpiresAt(JWTService.extractExpiration(jwtToken));
-//			refTokRepo.save(tok);
-//			// throw new RuntimeException("Refresh token is expired");
-//		} else {
-//		 throw new RuntimeException("Token is already active");
-//		}
-//		return jwtToken;
-//	}
 
 	public String tokensRefresh(RefreshTokensDTO dto) {
 		RefreshTokens refToken = refTokRepo.findByToken(dto.getToken())

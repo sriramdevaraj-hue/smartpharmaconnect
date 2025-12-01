@@ -25,10 +25,11 @@ public class InventoryController {
     private InventoryService invServ;
 
     @PostMapping("/medicines")
-    public ResponseEntity<?> addMedicines(@RequestBody MedicinesDTO dto) {
+    public ResponseEntity<?> addOrUpdateMedicines(@RequestBody MedicinesDTO dto) {
         try {
-            invServ.insertMedicines(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Medicines Added Successfully");
+            Medicines m = invServ.insertOrUpdateMedicines(dto);
+            return ResponseEntity.ok(m);
+            //return ResponseEntity.status(HttpStatus.CREATED).body("Medicines Added Successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Medicines Not Added !");
 

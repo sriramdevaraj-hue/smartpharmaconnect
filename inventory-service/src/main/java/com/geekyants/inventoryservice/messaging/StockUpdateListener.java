@@ -12,13 +12,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StockUpdateListener {
 	
-	private final InventoryServiceImpl invServiceImpl;
+	//private final InventoryServiceImpl invServiceImpl;
 
-    @RabbitListener(queues = "notification.order.placed")
-    public void handlePriceUpdated(OrderPlacedEvent event) {
-        //
-    	//log.info("Pricing received medicine.updated: {}", event);
-    	invServiceImpl.updateStock(event);
-    }
+//    @RabbitListener(queues = "notification.order.placed")
+//    public void handlePriceUpdated(OrderPlacedEvent event) {
+//        //
+//    	//log.info("Pricing received medicine.updated: {}", event);
+//    	invServiceImpl.updateStock(event);
+//    }
 
 }
+
+
+
+
+

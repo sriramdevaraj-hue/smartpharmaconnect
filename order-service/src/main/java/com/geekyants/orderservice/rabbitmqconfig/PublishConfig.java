@@ -13,39 +13,36 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PublishConfig {
-	
-        public static final String QUEUE = "notification.order.placed";
-        public static final String EXCHANGE = "order.events";
-        public static final String ROUTING_KEY = "order.placed";
 
-        @Bean
-        public Queue queue() {
-            return new Queue(QUEUE);
-        }
-	
+	public static final String QUEUE = "notification.order.placed";
+	public static final String EXCHANGE = "order.events";
+	public static final String ROUTING_KEY = "order.placed";
 
-	    @Bean
-	    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
-	        return new Jackson2JsonMessageConverter();
-	    }
-	    
-	    @Bean
-        public Binding binding(Queue queue, TopicExchange topicExchange) {
-            return BindingBuilder.bind(queue).to(topicExchange).with(ROUTING_KEY);
-        }
+	@Bean
+	public Queue queue() {
+		return new Queue(QUEUE);
+	}
 
-	    @Bean
-	    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
-	                                         Jackson2JsonMessageConverter converter) {
-	        RabbitTemplate template = new RabbitTemplate(connectionFactory);
-	        template.setMessageConverter(converter);
-	        return template;
-	    }
+	@Bean
+	public TopicExchange orderEventsExchange() {
+		return new TopicExchange(EXCHANGE);
+	}
 
-	    @Bean
-	    public TopicExchange orderEventsExchange() {
-	        return new TopicExchange(EXCHANGE);
-	    }
+	@Bean
+	public Binding binding(Queue queue, TopicExchange topicExchange) {
+		return BindingBuilder.bind(queue).to(topicExchange).with(ROUTING_KEY);
+	}
 
+	@Bean
+	public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
+		return new Jackson2JsonMessageConverter();
+	}
+
+	@Bean
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, Jackson2JsonMessageConverter converter) {
+		RabbitTemplate template = new RabbitTemplate(connectionFactory);
+		template.setMessageConverter(converter);
+		return template;
+	}
 
 }

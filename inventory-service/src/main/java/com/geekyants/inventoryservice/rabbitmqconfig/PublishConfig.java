@@ -9,7 +9,6 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,17 +19,16 @@ public class PublishConfig {
         public static final String EXCHANGE = "inventory.events";
         public static final String ROUTING_KEY = "medicine.updated";
 
-        @Bean(name = "publishQueue")
+        @Bean
         public Queue queue() {
             return new Queue(QUEUE);
         }
-        
-        @Bean(name = "publishExchange")
+        @Bean
         public TopicExchange topicExchange() {
             return new TopicExchange(EXCHANGE);
         }
         @Bean
-        public Binding binding(@Qualifier("publishQueue") Queue queue, @Qualifier("publishExchange") TopicExchange topicExchange) {
+        public Binding binding(Queue queue, TopicExchange topicExchange) {
             return BindingBuilder.bind(queue).to(topicExchange).with(ROUTING_KEY);
         }
 

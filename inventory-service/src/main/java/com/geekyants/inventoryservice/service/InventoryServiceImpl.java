@@ -27,9 +27,15 @@ public class InventoryServiceImpl implements InventoryService {
     @Autowired
     private RabbitTemplate template;
 
-    public Medicines insertMedicines(MedicinesDTO dto) {
-
-        Medicines med = new Medicines();
+    public Medicines insertOrUpdateMedicines(MedicinesDTO dto) {
+    	
+    	Medicines med =  null;
+    	if(dto.getId() != null) {
+    		med = getMedicinesById(dto.getId());
+    	}else {
+    		med = new Medicines();
+    	}
+        
         med.setName(dto.getName());
         med.setCategory(dto.getCategory());
         med.setStock(dto.getStock());
@@ -56,19 +62,19 @@ public class InventoryServiceImpl implements InventoryService {
         }
     }
     
-    public void updateStock(OrderPlacedEvent event) {
-    	
-    	UUID medId = event.getMedicineId();
-    	Optional<Medicines> med = invRepo.findById(medId);
-    	if(med.isPresent()) {
-    		int orderedStock =event.getOrderedStock();
-    		 Medicines newMed = med.get();
-    		 int updatedStock = newMed.getStock() - orderedStock;
-    		 newMed.setStock(updatedStock);
-    		 invRepo.save(newMed);
-    	}
-    	
-    }
+//    public void updateStock(OrderPlacedEvent event) {
+//    	
+//    	UUID medId = event.getMedicineId();
+//    	Optional<Medicines> med = invRepo.findById(medId);
+//    	if(med.isPresent()) {
+//    		int orderedStock =event.getOrderedStock();
+//    		 Medicines newMed = med.get();
+//    		 int updatedStock = newMed.getStock() - orderedStock;
+//    		 newMed.setStock(updatedStock);
+//    		 invRepo.save(newMed);
+//    	}
+//    	
+//    }
     
 }
 
